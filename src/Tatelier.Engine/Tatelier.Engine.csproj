@@ -69,7 +69,6 @@
     <Compile Include="CoroutineControl.cs" />
     <Compile Include="ImageLoadControl.cs" />
     <Compile Include="Interface\IEngineFunctionModule.cs" />
-    <Compile Include="Interface\IImageFunctionModule.cs" />
     <Compile Include="IScene.cs" />
     <Compile Include="ISupervision.cs" />
     <Compile Include="ITime.cs" />
