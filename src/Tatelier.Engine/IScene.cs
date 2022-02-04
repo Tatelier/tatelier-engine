@@ -11,6 +11,8 @@ namespace Tatelier.Engine
     {
         IEnumerator GetStartIterator();
 
+        int PreStart();
+
         void Update();
 
         void Draw();

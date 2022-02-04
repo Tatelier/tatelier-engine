@@ -9,34 +9,45 @@ using Tatelier.Engine.Interface;
 
 namespace Tatelier.Engine.Stub
 {
-    internal class EngineFunctionModule
+    public class EngineFunctionModule
         : IEngineFunctionModule
     {
         SHA256 sha256 = SHA256.Create();
 
         public string Title { get; set; }
 
+        public bool WindowMode { get; set; } = false;
+
         public int ClearDrawScreen()
         {
             return 0;
         }
 
+        public int CreateFont(string fontName, int size, int thick, int fontType)
+        {
+            var bytes = sha256.ComputeHash(Encoding.UTF8.GetBytes(fontName));
+
+            int handle = BitConverter.ToInt32(bytes, 0);
+
+            return handle;
+        }
+
         public int DrawGraph(int x, int y, int grHandle, int transFlag)
-        {
-            throw new NotImplementedException();
-        }
-
-        public int DrawGraphF(float xf, float yf, int grHandle, int transFlag)
-        {
-            throw new NotImplementedException();
-        }
-
-        public int End()
         {
             return 0;
         }
 
-        public int Init()
+        public int DrawGraphF(float xf, float yf, int grHandle, int transFlag)
+        {
+            return 0;
+        }
+
+        public int ModuleFinish()
+        {
+            return 0;
+        }
+
+        public int ModuleStart()
         {
             return 0;
         }
@@ -62,12 +73,12 @@ namespace Tatelier.Engine.Stub
 
         public int SetGraphMode(int width, int height, int colorBitDepth)
         {
-            throw new NotImplementedException();
+            return 0;
         }
 
         public int SetWindowSize(int width, int height)
         {
-            throw new NotImplementedException();
+            return 0;
         }
     }
 }

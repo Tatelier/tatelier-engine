@@ -9,16 +9,14 @@ using Tatelier.Engine.Interface;
 
 namespace Tatelier.Engine
 {
-    interface A
-    {
-        int DrawGraph(int x, int y);
-    }
     /// <summary>
     /// エンジン
     /// </summary>
     public class Engine : INowTime
     {
-        public SceneControl SceneControl { get; private set; } = new SceneControl();
+        SceneControl sceneControl = new SceneControl();
+        public ISceneControl SceneControl => sceneControl;
+
 
         public ImageLoadControl ImageLoadControl { get; private set; } = new ImageLoadControl();
 
@@ -36,25 +34,24 @@ namespace Tatelier.Engine
 
         long INowTime.Microsec => NowMicrosec;
 
-        public void Start<IScene>(ISupervision supervision)
+        public void Start<TStartScene>(ISupervision supervision)
+            where TStartScene : IScene, new ()
         {
-            if (supervision.FunctionModule != null)
+            if(supervision.FunctionModule == null)
             {
-                FunctionModule = supervision.FunctionModule;
+                // error
+                return;
             }
-            else
-            {
-                FunctionModule = new Stub.EngineFunctionModule();
-            }
+
+            FunctionModule = supervision.FunctionModule;
+
+            SceneControl.Start<TStartScene>();
 
             ImageLoadControl.Start(FunctionModule);
 
-            ImageLoadControl.Load("LiteDB.xml");
-            ImageLoadControl.Load("LiteDB.xml");
-
-            supervision.BeforeInit();
-            FunctionModule.Init();
-            supervision.AfterInit();
+            supervision.BeforeModuleStart();
+            FunctionModule.ModuleStart();
+            supervision.AfterModuleStart();
         }
 
         public void Run()
@@ -63,12 +60,16 @@ namespace Tatelier.Engine
             {
                 FunctionModule.ClearDrawScreen();
 
+                NowMicrosec = 0;
+                NowMillisec = (int)(NowMicrosec / 1000);
+
+                sceneControl.Update();
+                sceneControl.Draw();
+
                 FunctionModule.ScreenFlip();
             }
 
             CoroutineControl.Update();
-            NowMicrosec = 0;
-            NowMillisec = (int)(NowMicrosec / 1000);
         }
 
         public void Finish()

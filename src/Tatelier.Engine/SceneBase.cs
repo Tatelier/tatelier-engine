@@ -9,26 +9,26 @@ namespace Tatelier.Engine
 {
     public class SceneBase : IScene
     {
-        protected void Regist(float layer)
-        {
-
-        }
-
-        public void Update()
+        public virtual void Update()
         {
         }
-        public void Draw()
+        public virtual void Draw()
         {
         }
 
-        public IEnumerator GetStartIterator()
+        public virtual IEnumerator GetStartIterator()
         {
             yield break;
         }
 
-        public IEnumerator GetFinishIterator()
+        public virtual IEnumerator GetFinishIterator()
         {
             yield break;
+        }
+
+        public virtual int PreStart()
+        {
+            return 0;
         }
     }
 }

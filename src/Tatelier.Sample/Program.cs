@@ -10,37 +10,37 @@ namespace Tatelier.Sample
 {
     class Program : Engine.ISupervision
     {
-
-        Engine.Engine engine;
+        public static Program Singleton = new Program();
+        public static Engine.Engine Engine { get; private set; }
 
         public Action OnBeforeDxInit { get; set; }
         public Action OnAfterDxInit { get; set; }
 
-        public IEngineFunctionModule FunctionModule => null;
+        public IEngineFunctionModule FunctionModule { get; } = new Engine.Stub.EngineFunctionModule();
 
         void main(string[] args)
         {
-            engine = new Tatelier.Engine.Engine();
+            Engine = new Engine.Engine();
 
+            Engine.Start<Sample>(this);
 
-            engine.Start<Engine.SceneBase>(this);
+            Engine.Run();
 
-            engine.Run();
-
-            engine.Finish();
+            Engine.Finish();
         }
 
         static void Main(string[] args)
         {
-            var program = new Program();
-            program.main(args);
+            Singleton.main(args);
         }
 
-        public void BeforeInit()
+        public void BeforeModuleStart()
         {
+            FunctionModule.WindowMode = true;
+            FunctionModule.SetGraphMode(512, 384, 32);
         }
 
-        public void AfterInit()
+        public void AfterModuleStart()
         {
 
         }

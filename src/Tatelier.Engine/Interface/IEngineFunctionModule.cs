@@ -10,9 +10,11 @@ namespace Tatelier.Engine.Interface
     {
         string Title { get; set; }
 
-        int Init();
+        bool WindowMode { get; set; }
 
-        int End();
+        int ModuleStart();
+
+        int ModuleFinish();
 
         int ProcessMessage();
 
@@ -29,5 +31,7 @@ namespace Tatelier.Engine.Interface
         int DrawGraph(int x, int y, int grHandle, int transFlag);
 
         int DrawGraphF(float xf, float yf, int grHandle, int transFlag);
+
+        int CreateFont(string fontName, int size, int thick, int fontType);
     }
 }

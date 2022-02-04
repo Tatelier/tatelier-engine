@@ -67,8 +67,10 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="CoroutineControl.cs" />
+    <Compile Include="FontLoadControl.cs" />
     <Compile Include="ImageLoadControl.cs" />
     <Compile Include="Interface\IEngineFunctionModule.cs" />
+    <Compile Include="IReadonlySceneControl.cs" />
     <Compile Include="IScene.cs" />
     <Compile Include="ISupervision.cs" />
     <Compile Include="ITime.cs" />

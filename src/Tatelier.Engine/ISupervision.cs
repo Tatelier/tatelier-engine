@@ -11,8 +11,7 @@ namespace Tatelier.Engine
     {
         IEngineFunctionModule FunctionModule { get; }
 
-        void BeforeInit();
-
-        void AfterInit();
+        void AfterModuleStart();
+        void BeforeModuleStart();
     }
 }
