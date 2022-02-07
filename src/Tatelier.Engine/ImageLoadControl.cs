@@ -157,6 +157,14 @@ namespace Tatelier.Engine
             }
         }
 
+        public void Reset()
+        {
+            dbMemory?.Dispose();
+            dbDebugMemory?.Dispose();
+
+            dbMemory = new MemoryStream();
+            dbDebugMemory = null;
+        }
 
         /// <summary>
         /// 画像読込カラム
