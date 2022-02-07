@@ -17,6 +17,7 @@ namespace Tatelier.Engine
     public class ImageLoadControl
 	{
         MemoryStream dbMemory = new MemoryStream();
+        object dbMemoryLockObj = new object();
 
         MemoryStream dbDebugMemory = null;
 
@@ -64,44 +65,55 @@ namespace Tatelier.Engine
         /// <returns>ハンドル</returns>
         public int Load(string filePath)
         {
+            if (!File.Exists(filePath))
+            {
+                return -1;
+            }
             var bytes = sha256.ComputeHash(File.OpenRead(filePath));
 
             ulong hash01 = BitConverter.ToUInt64(bytes, 0);
             ulong hash02 = BitConverter.ToUInt64(bytes, 16);
 
-            using (var db = new LiteDB.LiteDatabase(dbMemory))
+            lock (dbMemoryLockObj)
             {
-                var collection = db.GetCollection<ImageLoadDBColumn>();
-
-                var one = collection.FindOne(x => x.Hash01 == hash01 && x.Hash02 == hash02);
-
-                int handle = -1;
-
-                if(one == null)
+                using (var db = new LiteDB.LiteDatabase(dbMemory))
                 {
-                    handle = engineFunctionModule.LoadGraph(filePath);
+                    var collection = db.GetCollection<ImageLoadDBColumn>();
 
-                    if (handle != -1)
+                    var list = collection.FindAll();//.ToArray();
+
+                    var one = collection.FindOne(x
+                        =>
+                    x.Hash01 == hash01 && x.Hash02 == hash02);
+
+                    int handle = -1;
+
+                    if (one == null)
                     {
-                        collection.Insert(new ImageLoadDBColumn()
-                        {
-                            Handle = handle,
-                            Hash01 = hash01,
-                            Hash02 = hash02,
-                            UsedCount = 1,
-                        });
+                        handle = engineFunctionModule.LoadGraph(filePath);
 
+                        if (handle != -1)
+                        {
+                            collection.Insert(new ImageLoadDBColumn()
+                            {
+                                Handle = handle,
+                                Hash01 = hash01,
+                                Hash02 = hash02,
+                                UsedCount = 1,
+                            });
+
+                            db.Commit();
+                        }
+                    }
+                    else
+                    {
+                        handle = one.Handle;
+                        one.UsedCount++;
+                        collection.Update(one);
                         db.Commit();
                     }
+                    return handle;
                 }
-                else
-                {
-                    handle = one.Handle;
-                    one.UsedCount++;
-                    collection.Update(one);
-                    db.Commit();
-                }
-                return handle;
             }
         }
 
@@ -112,32 +124,35 @@ namespace Tatelier.Engine
         /// <returns></returns>
         public int Delete(int handle)
         {
-            using (var db = new LiteDB.LiteDatabase(dbMemory))
+            lock (dbMemoryLockObj)
             {
-                var collection = db.GetCollection<ImageLoadDBColumn>();
-
-                var one = collection.FindOne(x => x.Handle == handle);
-
-                if (one == null)
+                using (var db = new LiteDB.LiteDatabase(dbMemory))
                 {
-                    // 無いのにコールされた
-                    return 0;
-                }
-                else
-                {
-                    one.UsedCount--;
-                    if (one.UsedCount == 0)
+                    var collection = db.GetCollection<ImageLoadDBColumn>();
+
+                    var one = collection.FindOne(x => x.Handle == handle);
+
+                    if (one == null)
                     {
-                        collection.Delete(one.id);
-                        db.Commit();
+                        // 無いのにコールされた
+                        return 0;
                     }
                     else
                     {
-                        collection.Update(one);
-                        db.Commit();
-                    }
+                        one.UsedCount--;
+                        if (one.UsedCount == 0)
+                        {
+                            collection.Delete(one.id);
+                            db.Commit();
+                        }
+                        else
+                        {
+                            collection.Update(one);
+                            db.Commit();
+                        }
 
-                    return one.UsedCount;
+                        return one.UsedCount;
+                    }
                 }
             }
         }
