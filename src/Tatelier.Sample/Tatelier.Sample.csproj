@@ -72,8 +72,8 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Tatelier.Engine\Tatelier.Engine.csproj">
-      <Project>{EEA77CD2-F5BF-4215-981E-864C0093E7E2}</Project>
-      <Name>TE</Name>
+      <Project>{eea77cd2-f5bf-4215-981e-864c0093e7e2}</Project>
+      <Name>Tatelier.Engine</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

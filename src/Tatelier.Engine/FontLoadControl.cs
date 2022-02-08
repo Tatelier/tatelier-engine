@@ -9,17 +9,15 @@ using Tatelier.Engine.Interface;
 
 namespace Tatelier.Engine
 {
-    class FontLoadControl
+    public class FontLoadControl: BaseLoadControl
     {
-        MemoryStream dbMemory = new MemoryStream();
-
         MemoryStream dbDebugMemory = null;
-
-        SHA256 sha256 = SHA256.Create();
 
         IEngineFunctionModule engineFunctionModule;
 
         bool isDebug = false;
+
+
         public bool IsDebug
         {
             get => isDebug;
@@ -48,7 +46,7 @@ namespace Tatelier.Engine
         {
             using (var db = new LiteDB.LiteDatabase(dbDebugMemory))
             {
-                var collection = db.GetCollection<ImageLoadDebugDBColumn>();
+                var collection = db.GetCollection<FontLoadDebugDBColumn>();
             }
         }
 
@@ -57,7 +55,11 @@ namespace Tatelier.Engine
         /// </summary>
         /// <param name="filePath">ファイルパス</param>
         /// <returns>ハンドル</returns>
-        public int Create(string fontName, int size, int thick, int fontType)
+        public int Create(string fontName
+            , int size = 16
+            , int thick = -1
+            , int fontType = -1
+            )
         {
             string str = $"{fontName}?{size}?{thick}?{fontType}";
 
@@ -68,7 +70,7 @@ namespace Tatelier.Engine
 
             using (var db = new LiteDB.LiteDatabase(dbMemory))
             {
-                var collection = db.GetCollection<ImageLoadDBColumn>();
+                var collection = db.GetCollection<LoadContentCommonColumn>();
 
                 var one = collection.FindOne(x => x.Hash01 == hash01 && x.Hash02 == hash02);
 
@@ -80,7 +82,7 @@ namespace Tatelier.Engine
 
                     if (handle != -1)
                     {
-                        collection.Insert(new ImageLoadDBColumn()
+                        collection.Insert(new LoadContentCommonColumn()
                         {
                             Handle = handle,
                             Hash01 = hash01,
@@ -111,7 +113,7 @@ namespace Tatelier.Engine
         {
             using (var db = new LiteDB.LiteDatabase(dbMemory))
             {
-                var collection = db.GetCollection<ImageLoadDBColumn>();
+                var collection = db.GetCollection<LoadContentCommonColumn>();
 
                 var one = collection.FindOne(x => x.Handle == handle);
 
@@ -139,27 +141,10 @@ namespace Tatelier.Engine
             }
         }
 
-
-        /// <summary>
-        /// 画像読込カラム
-        /// </summary>
-        internal class ImageLoadDBColumn
-        {
-            public int id { get; set; }
-
-            public int Handle { get; set; }
-
-            public ulong Hash01 { get; set; }
-
-            public ulong Hash02 { get; set; }
-
-            public int UsedCount { get; set; }
-        }
-
         /// <summary>
         /// 画像読込デバッグ用カラム
         /// </summary>
-        internal class ImageLoadDebugDBColumn
+        internal class FontLoadDebugDBColumn
         {
             public int id { get; set; }
 

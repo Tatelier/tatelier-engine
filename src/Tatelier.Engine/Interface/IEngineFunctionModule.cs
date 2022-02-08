@@ -28,6 +28,8 @@ namespace Tatelier.Engine.Interface
 
         int LoadGraph(string FileName, int NotUse3DFlag = 0);
 
+        int DeleteGraph(int handle);
+
         int DrawGraph(int x, int y, int grHandle, int transFlag);
 
         int DrawGraphF(float xf, float yf, int grHandle, int transFlag);

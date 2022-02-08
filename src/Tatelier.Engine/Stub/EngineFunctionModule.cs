@@ -61,6 +61,11 @@ namespace Tatelier.Engine.Stub
             return handle;
         }
 
+        public int DeleteGraph(int handle)
+        {
+            return 0;
+        }
+
         public int ProcessMessage()
         {
             return 0;

@@ -22,6 +22,8 @@ namespace Tatelier.Engine
 
         public SoundLoadControl SoundLoadControl { get; private set; } = new SoundLoadControl();
 
+        public FontLoadControl FontLoadControl { get; private set; } = new FontLoadControl();
+
         public CoroutineControl CoroutineControl { get; private set; } = new CoroutineControl();
 
         public IEngineFunctionModule FunctionModule { get; private set; }
@@ -48,6 +50,7 @@ namespace Tatelier.Engine
             SceneControl.Start<TStartScene>();
 
             ImageLoadControl.Start(FunctionModule);
+            FontLoadControl.Start(FunctionModule);
 
             supervision.BeforeModuleStart();
             FunctionModule.ModuleStart();
