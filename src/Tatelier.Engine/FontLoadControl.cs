@@ -59,9 +59,13 @@ namespace Tatelier.Engine
             , int size = 16
             , int thick = -1
             , int fontType = -1
+            , int charSet = -1
+            , int edgeSize = -1
+            , int italic = 0
+            , int handle = -1
             )
         {
-            string str = $"{fontName}?{size}?{thick}?{fontType}";
+            string str = $"{fontName}?{size}?{thick}?{fontType}?{charSet}?{edgeSize}?{italic}?{handle}";
 
             var bytes = sha256.ComputeHash(Encoding.UTF8.GetBytes(str));
 
@@ -74,17 +78,17 @@ namespace Tatelier.Engine
 
                 var one = collection.FindOne(x => x.Hash01 == hash01 && x.Hash02 == hash02);
 
-                int handle = -1;
+                int fontHandle = -1;
 
                 if (one == null)
                 {
-                    handle = engineFunctionModule.CreateFont(fontName, size, thick, fontType);
+                    fontHandle = engineFunctionModule.CreateFontToHandle(fontName, size, thick, fontType);
 
-                    if (handle != -1)
+                    if (fontHandle != -1)
                     {
                         collection.Insert(new LoadContentCommonColumn()
                         {
-                            Handle = handle,
+                            Handle = fontHandle,
                             Hash01 = hash01,
                             Hash02 = hash02,
                             UsedCount = 1,
@@ -95,12 +99,12 @@ namespace Tatelier.Engine
                 }
                 else
                 {
-                    handle = one.Handle;
+                    fontHandle = one.Handle;
                     one.UsedCount++;
                     collection.Update(one);
                     db.Commit();
                 }
-                return handle;
+                return fontHandle;
             }
         }
 

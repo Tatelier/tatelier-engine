@@ -23,13 +23,13 @@ namespace Tatelier.Engine.Stub
             return 0;
         }
 
-        public int CreateFont(string fontName, int size, int thick, int fontType)
+        public int CreateFontToHandle(string fontName, int size = 16, int thick = -1, int fontType = -1, int charSet = -1, int edgeSize = -1, int italic = 0, int handle = -1)
         {
             var bytes = sha256.ComputeHash(Encoding.UTF8.GetBytes(fontName));
 
-            int handle = BitConverter.ToInt32(bytes, 0);
+            int fontHandle = BitConverter.ToInt32(bytes, 0);
 
-            return handle;
+            return fontHandle;
         }
 
         public int DrawGraph(int x, int y, int grHandle, int transFlag)

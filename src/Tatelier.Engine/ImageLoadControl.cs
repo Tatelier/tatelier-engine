@@ -154,6 +154,10 @@ namespace Tatelier.Engine
 
         void LoadDebug(string filePath, int handle)
         {
+            if (!IsDebug)
+            {
+                return;
+            }
             if (handle == -1)
             {
                 lock (dbFailMemoryLockObj)
@@ -208,6 +212,33 @@ namespace Tatelier.Engine
             }
         }
 
+        void DeleteDebug(int handle)
+        {
+            if (!IsDebug)
+            {
+                return;
+            }
+
+            if (handle != -1)
+            {
+                lock (dbDebugMemoryLockObj)
+                {
+                    using (var db = new LiteDB.LiteDatabase(dbDebugMemory))
+                    {
+                        var collection = db.GetCollection<ImageLoadDebugDBColumn>();
+
+                        var one = collection.FindOne(x => x.Handle == handle);
+
+                        if (one != null)
+                        {
+                            collection.Delete(one.id);
+                            db.Commit();
+                        }
+                    }
+                }
+            }
+        }
+
         /// <summary>
         /// 画像を読込
         /// </summary>
@@ -253,7 +284,11 @@ namespace Tatelier.Engine
             {
                 using (var db = new LiteDB.LiteDatabase(dbMemory))
                 {
-                    return UpdateFromDelete(db, handle, () => engineFunctionModule.DeleteGraph(handle));
+                    int ret = UpdateFromDelete(db, handle, () => engineFunctionModule.DeleteGraph(handle));
+
+                    DeleteDebug(handle);
+
+                    return ret;
                 }
             }
         }

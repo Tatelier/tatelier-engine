@@ -34,6 +34,6 @@ namespace Tatelier.Engine.Interface
 
         int DrawGraphF(float xf, float yf, int grHandle, int transFlag);
 
-        int CreateFont(string fontName, int size, int thick, int fontType);
+        int CreateFontToHandle(string fontName, int size = 16, int thick = -1, int fontType = -1, int charSet = -1, int edgeSize = -1, int italic = 0, int handle = -1);
     }
 }
