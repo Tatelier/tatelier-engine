@@ -158,6 +158,10 @@ namespace Tatelier.Engine
             {
                 return;
             }
+            if(dbDebugMemory == null)
+            {
+                dbDebugMemory = new MemoryStream();
+            }
             if (handle == -1)
             {
                 lock (dbFailMemoryLockObj)
@@ -221,6 +225,10 @@ namespace Tatelier.Engine
 
             if (handle != -1)
             {
+                if(dbDebugMemory == null)
+                {
+                    dbDebugMemory = new MemoryStream();
+                }
                 lock (dbDebugMemoryLockObj)
                 {
                     using (var db = new LiteDB.LiteDatabase(dbDebugMemory))
